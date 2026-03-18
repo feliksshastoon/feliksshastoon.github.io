@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио | Felikss Shastoon</title>
+    
+    <!-- Современные шрифты и иконки -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Сброс и базовые настройки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* Кастомный курсор */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ff3366;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.2s ease;
+            transition-property: width, height, border;
+            will-change: width, height, transform, border;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            width: 8px;
+            height: 8px;
+            background: #ff3366;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.1s ease;
+            will-change: transform;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        /* Прелоадер */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .preloader-text {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            animation: glitch 1s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: skew(0deg, 0deg); opacity: 1; text-shadow: 2px 2px #ff3366, -2px -2px #00ff00; }
+            20% { transform: skew(5deg, -5deg); opacity: 0.8; text-shadow: -2px 2px #ff3366, 2px -2px #00ff00; }
+            40% { transform: skew(-5deg, 5deg); opacity: 0.9; text-shadow: 2px -2px #ff3366, -2px 2px #00ff00; }
+            60% { transform: skew(3deg, 3deg); opacity: 0.7; text-shadow: -3px 3px #ff3366, 3px -3px #00ff00; }
+            80% { transform: skew(-3deg, -3deg); opacity: 0.8; text-shadow: 3px 3px #ff3366, -3px -3px #00ff00; }
+        }
+
+        /* Фоновый шум */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJmIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc0IiBudW1PY3RhdmVzPSIzIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNmKSIgb3BhY2l0eT0iMC4wNCIgLz48L3N2Zz4=');
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+        }
+
+        /* Навигация */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+                
+        .logo .short {
+            display: inline-block;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .logo .full {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: auto;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            color: #ff3366;
+            font-size: 1.8rem;
+            background: transparent;
+            pointer-events: none;
+        }
+
+        .logo:hover .short {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+
+        .logo:hover .full {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #ff3366;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover::after {
+            transform: translateX(0);
+        }
+
+        /* Бургер-меню */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            z-index: 200;
+        }
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 0;
+            overflow: hidden;
+            line-height: 1.2;
+            display: inline-block;
+        }
+
+        .nav-links a::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #ff3366;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+        .nav-links a:hover::before {
+            transform: translateY(0);
+        }
+
+        .nav-links a span {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-links a:hover span {
+            transform: translateY(-100%);
+        }
+
+        /* Переключатель языка */
+        .lang-switcher {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            padding-left: 2rem;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .lang-btn.active {
+            background: #ff3366;
+            border-color: #ff3366;
+        }
+
+        .lang-btn:hover {
+            border-color: #ff3366;
+            transform: translateY(-2px);
+        }
+
+        /* Основной контейнер */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 4rem;
+            position: relative;
+        }
+
+        /* Hero секция с 3D эффектом */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-title {
+            font-size: 7rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            position: relative;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-title span {
+            display: block;
+            background: linear-gradient(45deg, #ffffff, #ff3366, #00ff00, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 300% 300%;
+            animation: gradientFlow 8s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s both;
+            position: relative;
+            padding-left: 4rem;
+        }
+
+        .hero-subtitle::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 3rem;
+            height: 2px;
+            background: #ff3366;
+            transform: translateY(-50%);
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 2rem;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .btn {
+            padding: 1rem 3rem;
+            background: transparent;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: 2px solid #ff3366;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ff3366;
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            color: #ffffff;
+        }
+
+        .btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .btn-outline {
+            border: 2px solid #ff3366;
+            background: transparent;
+        }
+
+        .btn-outline::before {
+            background: #ff3366;
+        }
+
+        /* 3D куб */
+        .hero-3d {
+            position: absolute;
+            right: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 400px;
+            height: 400px;
+            perspective: 1000px;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate 20s infinite linear;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 51, 102, 0.1);
+            border: 2px solid #ff3366;
+            box-shadow: 0 0 50px rgba(255, 51, 102, 0.3);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ff3366;
+        }
+
+        .front  { transform: translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .right  { transform: rotateY(90deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+        @keyframes rotate {
+            from { transform: rotateX(0) rotateY(0); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* Секция "Обо мне" */
+        .about {
+            padding: 6rem 0;
+            position: relative;
+            background: linear-gradient(180deg, transparent 0%, rgba(255, 51, 102, 0.05) 50%, transparent 100%);
+        }
+
+        .about-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .about-image {
+            position: relative;
+            border-radius: 30px;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            box-shadow: 0 20px 40px rgba(255, 51, 102, 0.3);
+            transform: rotate(2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .about-image:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .about-image:hover img {
+            transform: scale(1.1);
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 50%, rgba(255, 51, 102, 0.2) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .about-image::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: -20px;
+            bottom: -20px;
+            border: 2px solid #ff3366;
+            border-radius: 30px;
+            z-index: -1;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .about-image:hover::after {
+            top: 10px;
+            left: 10px;
+            right: -10px;
+            bottom: -10px;
+            opacity: 1;
+        }
+
+        .about-badge {
+            position: absolute;
+            bottom: 30px;
+            right: -20px;
+            background: #ff3366;
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            z-index: 2;
+            box-shadow: 0 10px 20px rgba(255, 51, 102, 0.5);
+            animation: float 3s ease infinite;
+            white-space: nowrap;
+        }
+
+        .about-content {
+            position: relative;
+        }
+
+        .about-subtitle {
+            color: #ff3366;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            display: inline-block;
+            position: relative;
+        }
+
+        .about-subtitle::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: #ff3366;
+        }
+
+        .about-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .about-title span {
+            color: #ff3366;
+            position: relative;
+            display: inline-block;
+        }
+
+        .about-title span::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 51, 102, 0.2);
+            z-index: -1;
+        }
+
+        .about-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .about-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 51, 102, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #ff3366;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover .info-icon {
+            background: #ff3366;
+            color: #ffffff;
+            transform: rotate(360deg);
+        }
+
+        .info-text {
+            font-size: 1rem;
+        }
+
+        .info-text strong {
+            display: block;
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 0.2rem;
+        }
+
+        .info-text span {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ff3366;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .stat-number::after {
+            content: '+';
+            font-size: 1.5rem;
+            position: absolute;
+            top: 0;
+            right: -20px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Секция работ */
+        .works {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 4rem;
+            margin-bottom: 4rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff3366, transparent);
+        }
+
+        .works-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .work-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            aspect-ratio: 4/5;
+        }
+
+        .work-item:hover {
+            transform: scale(0.98);
+        }
+
+        .work-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .work-item:hover .work-image {
+            transform: scale(1.1);
+        }
+
+        .work-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .work-item:hover .work-overlay {
+            opacity: 1;
+        }
+
+        .work-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .work-item:hover .work-title {
+            transform: translateY(0);
+        }
+
+        .work-category {
+            font-size: 1rem;
+            color: #ff3366;
+            transform: translateY(20px);
+            transition: transform 0.3s ease 0.1s;
+        }
+
+        .work-item:hover .work-category {
+            transform: translateY(0);
+        }
+
+        /* Модальное окно для проектов */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 1000;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: block;
+        }
+
+        .modal-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            position: relative;
+            animation: modalFadeIn 0.5s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: #ff3366;
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+            background: #ff5577;
+        }
+
+        .modal-header {
+            margin-bottom: 2rem;
+            padding-right: 4rem;
+        }
+
+        .modal-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffffff, #ff3366);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-category {
+            font-size: 1.1rem;
+            color: #ff3366;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Галерея в модальном окне - АДАПТИВНАЯ */
+        .gallery {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .gallery-main {
+            width: 100%;
+            min-height: 300px;
+            max-height: 80vh;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            position: relative;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-main img {
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-main:hover img {
+            transform: scale(1.02);
+        }
+
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 51, 102, 0.8);
+            border: none;
+            border-radius: 50%;
+            color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
+
+        .gallery-nav:hover {
+            background: #ff3366;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .gallery-nav.prev {
+            left: 20px;
+        }
+
+        .gallery-nav.next {
+            right: 20px;
+        }
+
+        .gallery-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-thumb {
+            aspect-ratio: 1/1;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .gallery-thumb:hover {
+            opacity: 0.8;
+        }
+
+        .gallery-thumb.active {
+            opacity: 1;
+            border-color: #ff3366;
+            transform: scale(1.05);
+        }
+
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-description {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .modal-description-text h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff3366;
+        }
+
+        .modal-description-text p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .modal-details {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-item {
+            margin-bottom: 1.2rem;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            color: #ff3366;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .detail-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 51, 102, 0.2);
+            border: 1px solid #ff3366;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: #ff3366;
+        }
+
+        /* Параллакс секция */
+        .parallax {
+            height: 60vh;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .parallax::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .parallax-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .parallax-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Секция навыков - с интерактивом и переводами */
+        .skills {
+            padding: 6rem 0;
+        }
+
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .skill-item {
+            position: relative;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .skill-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 51, 102, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .skill-item:hover::before {
+            transform: translateX(100%);
+        }
+
+        .skill-item:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .skill-icon {
+            font-size: 2.5rem;
+            color: #ff3366;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .skill-item:hover .skill-icon {
+            transform: scale(1.1);
+        }
+
+        .skill-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .skill-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .skill-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #ff3366;
+            width: 0;
+            transition: width 1s ease;
+        }
+
+        .skill-description {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease, margin 0.3s ease;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border-top: 1px solid transparent;
+        }
+
+        .skill-item.active .skill-description {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top-color: rgba(255, 51, 102, 0.3);
+        }
+
+        .skill-tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .skill-tech-item {
+            background: rgba(255, 51, 102, 0.2);
+            border: 1px solid #ff3366;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tech-item:hover {
+            background: #ff3366;
+            transform: scale(1.05);
+        }
+
+        /* Футер с контактами */
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            background: #0a0a0a;
+            transition: box-shadow 0.3s ease;
+        }
+
+        footer.highlight {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), inset 0 0 20px rgba(255, 215, 0, 0.3);
+            border-top-color: gold;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+        }
+
+        .contact-item:hover {
+            border-color: #ff3366;
+            transform: translateX(10px);
+            background: rgba(255, 51, 102, 0.1);
+        }
+
+        .contact-item i {
+            color: #ff3366;
+            font-size: 1.3rem;
+            width: 24px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .social-links a {
+            color: #ffffff;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ff3366;
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        .copyright {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        /* Анимации */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Медиа запросы */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 5rem;
+            }
+            
+            .hero-3d {
+                display: none;
+            }
+            
+            .logo .full {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .about-container {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .about-image {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .works-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .skills-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal-description {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Отключаем кастомный курсор на мобильных */
+            .cursor, .cursor-follower {
+                display: none;
+            }
+
+            /* Отключаем фиксированный параллакс */
+            .parallax {
+                background-attachment: scroll;
+            }
+
+            nav {
+                padding: 1rem 2rem;
+            }
+
+            /* Бургер-меню */
+            .menu-toggle {
+                display: none;
+                flex-direction: column;
+                cursor: pointer;
+                z-index: 200;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
+                padding: 8px 12px;
+                border-radius: 8px;
+                border: 1px solid rgba(255, 51, 102, 0.3);
+                transition: 0.3s ease;
+            }
+
+            .menu-toggle:hover {
+                background: rgba(255, 51, 102, 0.3);
+            }
+
+            .menu-toggle span {
+                width: 25px;
+                height: 3px;
+                background: #fff;
+                margin: 3px 0;
+                transition: 0.3s;
+            }
+
+            /* Анимация превращения в крестик */
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(7px, -7px);
+            }
+            
+            .nav-links {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100vh;
+                background: rgba(10,10,10,0.98);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                z-index: 150;
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .nav-links a {
+                font-size: 1.5rem;
+            }
+            .lang-switcher {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+            }
+            
+            .logo .full {
+                font-size: 1.2rem;
+            }
+            
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+                padding-left: 2rem;
+            }
+            
+            .hero-subtitle::before {
+                width: 1.5rem;
+            }
+            
+            .about-title {
+                font-size: 2.5rem;
+            }
+            
+            .about-info {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .about-stats {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .works-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .skills-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .container {
+                padding: 0 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+                margin-bottom: 2rem;
+            }
+            
+            .modal-title {
+                font-size: 2rem;
+            }
+            
+            .gallery-thumbnails {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .parallax-title {
+                font-size: 2.5rem;
+            }
+            
+            .contact-item {
+                font-size: 1rem;
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .gallery-thumbnails {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .gallery-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .logo .full {
+                font-size: 1rem;
+            }
+            
+            .contact-info {
+                gap: 0.8rem;
+            }
+            
+            .contact-item {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Дополнительные правки для очень маленьких экранов */
+        @media (max-width: 360px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            .about-title {
+                font-size: 2rem;
+            }
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* Стилизация скролла */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff3366;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff5577;
+        }
+    </style>
+</head>
+<body>
+    <!-- Прелоадер -->
+    <div class="preloader">
+        <div class="preloader-text">WELCOME</div>
+    </div>
+
+    <!-- Кастомный курсор -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Фоновый шум -->
+    <div class="noise"></div>
+
+    <!-- Навигация -->
+    <nav>
+        <div class="logo">
+            <span class="short">F.S</span>
+            <span class="full">Felikss Shastoon</span>
+        </div>
+        <div class="menu-toggle" id="mobile-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#home" data-translate="nav-home" data-text="Главная"><span>Главная</span></a>
+            <a href="#about" data-translate="nav-about" data-text="Обо мне"><span>Обо мне</span></a>
+            <a href="#works" data-translate="nav-works" data-text="Проекты"><span>Проекты</span></a>
+            <a href="#skills" data-translate="nav-skills" data-text="Навыки"><span>Навыки</span></a>
+            <a href="#contact" class="contact-link" data-translate="nav-contact" data-text="Контакты"><span>Контакты</span></a>
+            
+            <!-- Переключатель языка -->
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="ru">RU</button>
+                <button class="lang-btn" data-lang="en">EN</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero секция -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span data-translate="hero-title-1">Креативный</span>
+                    <span data-translate="hero-title-2">Дизайнер</span>
+                </h1>
+                <p class="hero-subtitle" data-translate="hero-subtitle">Создаю уникальные проекты с душой</p>
+                <div class="hero-cta">
+                    <a href="#works" class="btn" data-translate="hero-btn-works">Мои работы</a>
+                    <a href="#contact" class="btn btn-outline contact-link" data-translate="hero-btn-contact">Связаться</a>
+                </div>
+            </div>
+            
+            <!-- 3D элемент -->
+            <div class="hero-3d">
+                <div class="cube">
+                    <div class="cube-face front"><i class="fas fa-paint-brush"></i></div>
+                    <div class="cube-face back"><i class="fas fa-camera"></i></div>
+                    <div class="cube-face right"><i class="fas fa-pen-fancy"></i></div>
+                    <div class="cube-face left"><i class="fas fa-layer-group"></i></div>
+                    <div class="cube-face top"><i class="fas fa-magic"></i></div>
+                    <div class="cube-face bottom"><i class="fas fa-star"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция "Обо мне" -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-container">
+                <div class="about-image">
+                    <!-- Здесь укажите путь к вашему фото -->
+                    <img src="atkbrc.jpg" alt="Лилия Ромашина - дизайнер">
+                    <div class="about-badge" data-translate="about-badge">Изучаю дизайн 3 года</div>
+                </div>
+                <div class="about-content">
+                    <span class="about-subtitle" data-translate="about-subtitle">Кто я?</span>
+                    <h2 class="about-title"><span data-translate="about-name">Лилия Ромашина</span> / <span data-translate="about-nickname">Felikss_Shastoon</span></h2>
+                    <p class="about-description" data-translate="about-description">
+                        Привет! Я дизайнер из Рошаля. Мне 18 лет, я на третьем курсе в колледже на специальности "графический дизайнер". 
+                        Я всегда мечтала попасть в творческую сферу. Вы увидите мои работы и всё поймете! 
+                        Моя философия — дизайн должен не только радовать глаз, но и решать реальные задачи пользователей.
+                    </p>
+                    
+                    <div class="about-info">
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                            <div class="info-text">
+                                <strong data-translate="info-location">Локация</strong>
+                                <span data-translate="info-location-value">Рошаль, Россия</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="info-text">
+                                <strong data-translate="info-education">Образование</strong>
+                                <span data-translate="info-education-value">ГБПОУ МО "ШЭТ", Графический дизайнер</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-text">
+                                <strong data-translate="info-email">Email</strong>
+                                <span>liliaromasina12614@gmail.com</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="info-text">
+                                <strong data-translate="info-languages">Языки</strong>
+                                <span data-translate="info-languages-value">Русский, English</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">10</div>
+                            <div class="stat-label" data-translate="stat-projects">Проектов</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">50</div>
+                            <div class="stat-label" data-translate="stat-works">Работ</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">2026</div>
+                            <div class="stat-label" data-translate="stat-year">Год</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция работ -->
+    <section id="works" class="works">
+        <div class="container">
+            <h2 class="section-title" data-translate="section-works">Мои проекты</h2>
+            <div class="works-grid">
+                <div class="work-item" data-project="1">
+                    <img src="проект1_визитка/Визитка лиц.jpg" alt="Визитка" class="work-image">
+                    <div class="work-overlay">
+                        <h3 class="work-title" data-translate="project1-title">Визитка</h3>
+                        <p class="work-category" data-translate="project1-category">Графический дизайн</p>
+                    </div>
+                </div>
+                <div class="work-item" data-project="2">
+                    <img src="проект2_фотобук/Фотобук 1.jpg" alt="Фотобук" class="work-image">
+                    <div class="work-overlay">
+                        <h3 class="work-title" data-translate="project2-title">Фотобук</h3>
+                        <p class="work-category" data-translate="project2-category">Верстка</p>
+                    </div>
+                </div>
+                <div class="work-item" data-project="3">
+                    <img src="проект3_портфолио/Портфолио 1.jpg" alt="Портфолио" class="work-image">
+                    <div class="work-overlay">
+                        <h3 class="work-title" data-translate="project3-title">Портфолио</h3>
+                        <p class="work-category" data-translate="project3-category">Веб-дизайн</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Параллакс секция -->
+    <section class="parallax" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+        <div class="parallax-content">
+            <h2 class="parallax-title" data-translate="parallax-title">Давайте создавать вместе</h2>
+            <a href="#contact" class="btn btn-outline contact-link" data-translate="parallax-btn">Начать проект</a>
+        </div>
+    </section>
+
+    <!-- Секция навыков с интерактивом и переводами -->
+    <section id="skills" class="skills">
+        <div class="container">
+            <h2 class="section-title" data-translate="section-skills">Навыки</h2>
+            <div class="skills-container">
+                <div class="skill-item" data-skill="1">
+                    <div class="skill-icon"><i class="fas fa-pencil-ruler"></i></div>
+                    <h3 class="skill-title" data-translate="skill-1">Графический дизайн</h3>
+                    <div class="skill-progress">
+                        <div class="skill-progress-bar" style="width: 90%;"></div>
+                    </div>
+                    <div class="skill-description">
+                        <p data-translate="skill1_desc">Владею основными программами для графического дизайна:</p>
+                        <div class="skill-tech-list">
+                            <span class="skill-tech-item">Adobe Photoshop</span>
+                            <span class="skill-tech-item">Adobe Illustrator</span>
+                            <span class="skill-tech-item">CorelDRAW</span>
+                            <span class="skill-tech-item">Figma</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="skill-item" data-skill="2">
+                    <div class="skill-icon"><i class="fas fa-book-open"></i></div>
+                    <h3 class="skill-title" data-translate="skill-2">Верстка</h3>
+                    <div class="skill-progress">
+                        <div class="skill-progress-bar" style="width: 85%;"></div>
+                    </div>
+                    <div class="skill-description">
+                        <p data-translate="skill2_desc">Работаю с макетами и версткой полиграфии:</p>
+                        <div class="skill-tech-list">
+                            <span class="skill-tech-item">Adobe InDesign</span>
+                            <span class="skill-tech-item">QuarkXPress</span>
+                            <span class="skill-tech-item">Figma</span>
+                            <span class="skill-tech-item">Canva</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="skill-item" data-skill="3">
+                    <div class="skill-icon"><i class="fas fa-cube"></i></div>
+                    <h3 class="skill-title" data-translate="skill-3">Веб-дизайн</h3>
+                    <div class="skill-progress">
+                        <div class="skill-progress-bar" style="width: 75%;"></div>
+                    </div>
+                    <div class="skill-description">
+                        <p data-translate="skill3_desc">Проектирую интерфейсы и сайты:</p>
+                        <div class="skill-tech-list">
+                            <span class="skill-tech-item">Figma</span>
+                            <span class="skill-tech-item">Adobe XD</span>
+                            <span class="skill-tech-item">Tilda</span>
+                            <span class="skill-tech-item">Webflow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер с контактами -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="contact-info">
+                    <a href="tel:+79660350109" class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>8 (966) 035-01-09</span>
+                    </a>
+                    <a href="mailto:liliaromasina12614@gmail.com" class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>liliaromasina12614@gmail.com</span>
+                    </a>
+                </div>
+                
+                <div class="social-links">
+                    <a href="https://vk.com/hertov_optimist" target="_blank" rel="noopener noreferrer" title="VK"><i class="fab fa-vk"></i></a>
+                    <a href="https://t.me/Felikss_shastoon" target="_blank" rel="noopener noreferrer" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                </div>
+                
+                <p class="copyright" data-translate="footer-copyright">© 2026 Felikss_Shastoon. Все права защищены</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Модальное окно для проектов -->
+    <div class="modal" id="projectModal">
+        <button class="modal-close"><i class="fas fa-times"></i></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Визитка</h2>
+                <p class="modal-category" id="modalCategory">Графический дизайн</p>
+            </div>
+            
+            <div class="gallery">
+                <div class="gallery-main">
+                    <img id="mainImage" src="" alt="Project image">
+                </div>
+                
+                <button class="gallery-nav prev"><i class="fas fa-chevron-left"></i></button>
+                <button class="gallery-nav next"><i class="fas fa-chevron-right"></i></button>
+                
+                <div class="gallery-thumbnails" id="galleryThumbnails"></div>
+            </div>
+            
+            <div class="modal-description">
+                <div class="modal-description-text">
+                    <h3 data-translate="about-project">О проекте</h3>
+                    <p id="projectDescription">Описание проекта...</p>
+                </div>
+                
+                <div class="modal-details">
+                    <div class="detail-item">
+                        <div class="detail-label" data-translate="detail-client">Клиент</div>
+                        <div class="detail-value" id="projectClient">Частный заказ</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label" data-translate="detail-year">Год</div>
+                        <div class="detail-value" id="projectYear">2025</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label" data-translate="detail-role">Роль</div>
+                        <div class="detail-value" id="projectRole">Дизайнер</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label" data-translate="detail-tech">Технологии</div>
+                        <div class="detail-tags" id="projectTags"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Прелоадер
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.querySelector('.preloader').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Кастомный курсор
+        const cursor = document.querySelector('.cursor');
+        const follower = document.querySelector('.cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+            follower.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+
+        // Эффект на ссылках для курсора
+        const links = document.querySelectorAll('a, button, .work-item, .skill-item, .about-image, .gallery-thumb, .gallery-nav');
+        links.forEach(link => {
+            link.addEventListener('mouseenter', () => {
+                cursor.style.width = '40px';
+                cursor.style.height = '40px';
+                cursor.style.borderColor = '#00ff00';
+            });
+            
+            link.addEventListener('mouseleave', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.borderColor = '#ff3366';
+            });
+        });
+
+        // Анимация появления элементов при скролле
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.work-item, .skill-item, .about-image, .about-content').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(50px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // 3D эффект для куба при движении мыши
+        const cube = document.querySelector('.cube');
+        if (cube) {
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                cube.style.transform = `rotateX(${y}deg) rotateY(${x}deg)`;
+            });
+        }
+
+        // Плавный скролл к якорям
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Если это ссылка на контакты - подсвечиваем футер
+                    if (this.getAttribute('href') === '#contact') {
+                        const footer = document.querySelector('footer');
+                        footer.classList.add('highlight');
+                        setTimeout(() => {
+                            footer.classList.remove('highlight');
+                        }, 2000);
+                    }
+                }
+            });
+        });
+
+        // ИСПРАВЛЕННЫЙ интерактив для навыков: открывается только один
+        document.querySelectorAll('.skill-item').forEach(skill => {
+            skill.addEventListener('click', function(e) {
+                // Если текущий уже активен — просто закрываем его
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active');
+                } else {
+                    // Закрываем все активные (если есть)
+                    document.querySelectorAll('.skill-item.active').forEach(activeSkill => {
+                        activeSkill.classList.remove('active');
+                    });
+                    // Открываем текущий
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        const projectData = {
+            1: {
+                title: 'Визитка',
+                titleEn: 'Business Card',
+                category: 'Графический дизайн',
+                categoryEn: 'Graphic Design',
+                description: 'Дизайн корпоративной визитки. Разработка уникального стиля, подбор шрифтов и цветовой гаммы. Двусторонняя печать с оригинальным дизайном.',
+                descriptionEn: 'Corporate business card design. Development of a unique style, selection of fonts and color scheme. Double-sided printing with original design.',
+                client: 'Частный заказ',
+                clientEn: 'Private client',
+                year: '2026',
+                role: 'Графический дизайнер',
+                roleEn: 'Graphic Designer',
+                tags: ['Photoshop', 'Illustrator', 'Print Design'],
+                images: [
+                    'проект1_визитка/Визитка лиц.jpg',
+                    'проект1_визитка/Визитка зад.jpg'
+                ]
+            },
+            2: {
+                title: 'Фотобук',
+                titleEn: 'Photobook',
+                category: 'Верстка',
+                categoryEn: 'Layout',
+                description: 'Создание фотокниги с уникальным дизайном. Разработка макета, верстка 12 страниц с фотографиями, подбор стиля и оформления.',
+                descriptionEn: 'Creating a photobook with a unique design. Layout development, layout of 12 pages with photos, style selection and design.',
+                client: 'Студия фотографии',
+                clientEn: 'Photo Studio',
+                year: '2025',
+                role: 'Дизайнер верстки',
+                roleEn: 'Layout Designer',
+                tags: ['InDesign', 'Photoshop', 'Book Design'],
+                images: [
+                    'проект2_фотобук/Фотобук 1.jpg',
+                    'проект2_фотобук/Фотобук 2.jpg',
+                    'проект2_фотобук/Фотобук 3.jpg',
+                    'проект2_фотобук/Фотобук 4.jpg',
+                    'проект2_фотобук/Фотобук 5.jpg',
+                    'проект2_фотобук/Фотобук 6.jpg',
+                    'проект2_фотобук/Фотобук 7.jpg',
+                    'проект2_фотобук/Фотобук 8.jpg',
+                    'проект2_фотобук/Фотобук 9.jpg',
+                    'проект2_фотобук/Фотобук 10.jpg',
+                    'проект2_фотобук/Фотобук 11.jpg',
+                    'проект2_фотобук/Фотобук 12.jpg'
+                ]
+            },
+            3: {
+                title: 'Портфолио',
+                titleEn: 'Portfolio',
+                category: 'Веб-дизайн',
+                categoryEn: 'Web Design',
+                description: 'Разработка личного портфолио. Создание современного дизайна для представления работ, адаптивная верстка, уникальный стиль.',
+                descriptionEn: 'Development of a personal portfolio. Creating a modern design to showcase works, responsive layout, unique style.',
+                client: 'Личный проект',
+                clientEn: 'Personal project',
+                year: '2025',
+                role: 'Веб-дизайнер',
+                roleEn: 'Web Designer',
+                tags: ['Figma', 'UI/UX', 'Web Design'],
+                images: [
+                    'проект3_портфолио/Портфолио 1.jpg',
+                    'проект3_портфолио/Портфолио 2.jpg',
+                    'проект3_портфолио/Портфолио 3.jpg',
+                    'проект3_портфолио/Портфолио 4.jpg'
+                ]
+            }
+        };
+
+        const translations = {
+            ru: {
+                'nav-home': 'Главная',
+                'nav-about': 'Обо мне',
+                'nav-works': 'Проекты',
+                'nav-skills': 'Навыки',
+                'nav-contact': 'Контакты',
+                'hero-title-1': 'Креативный',
+                'hero-title-2': 'Дизайнер',
+                'hero-subtitle': 'Создаю уникальные проекты с душой',
+                'hero-btn-works': 'Мои работы',
+                'hero-btn-contact': 'Связаться',
+                'about-subtitle': 'Кто я?',
+                'about-name': 'Лилия Ромашина',
+                'about-nickname': 'Felikss_Shastoon',
+                'about-badge': 'Изучаю дизайн 3 года',
+                'about-description': 'Привет! Я дизайнер из Рошаля. Мне 18 лет, я на третьем курсе в колледже на специальности "графический дизайнер". Я всегда мечтала попасть в творческую сферу. Вы увидите мои работы и всё поймете! Моя философия — дизайн должен не только радовать глаз, но и решать реальные задачи пользователей.',
+                'info-location': 'Локация',
+                'info-location-value': 'Рошаль, Россия',
+                'info-education': 'Образование',
+                'info-education-value': 'ГБПОУ МО "ШЭТ", Графический дизайнер',
+                'info-email': 'Email',
+                'info-languages': 'Языки',
+                'info-languages-value': 'Русский, English',
+                'stat-projects': 'Проектов',
+                'stat-works': 'Работ',
+                'stat-year': 'Год',
+                'section-works': 'Мои проекты',
+                'section-skills': 'Навыки',
+                'skill-1': 'Графический дизайн',
+                'skill-2': 'Верстка',
+                'skill-3': 'Веб-дизайн',
+                'skill1_desc': 'Владею основными программами для графического дизайна:',
+                'skill2_desc': 'Работаю с макетами и версткой полиграфии:',
+                'skill3_desc': 'Проектирую интерфейсы и сайты:',
+                'parallax-title': 'Давайте создавать вместе',
+                'parallax-btn': 'Начать проект',
+                'footer-copyright': '© 2026 Felikss_Shastoon. Все права защищены',
+                'project1-title': 'Визитка',
+                'project1-category': 'Графический дизайн',
+                'project2-title': 'Фотобук',
+                'project2-category': 'Верстка',
+                'project3-title': 'Портфолио',
+                'project3-category': 'Веб-дизайн',
+                'about-project': 'О проекте',
+                'detail-client': 'Клиент',
+                'detail-year': 'Год',
+                'detail-role': 'Роль',
+                'detail-tech': 'Технологии'
+            },
+            en: {
+                'nav-home': 'Home',
+                'nav-about': 'About',
+                'nav-works': 'Projects',
+                'nav-skills': 'Skills',
+                'nav-contact': 'Contact',
+                'hero-title-1': 'Creative',
+                'hero-title-2': 'Designer',
+                'hero-subtitle': 'Creating unique projects with soul',
+                'hero-btn-works': 'My works',
+                'hero-btn-contact': 'Contact me',
+                'about-subtitle': 'Who am I?',
+                'about-name': 'Liliya Romashina',
+                'about-nickname': 'Felikss_Shastoon',
+                'about-badge': 'Studying design for 3 years',
+                'about-description': "Hi! I'm a designer from Roshal. I'm 18 years old, I'm in my third year of college majoring in Graphic Design. I've always dreamed of being in the creative field. You'll see my work and understand everything! My philosophy is that design should not only please the eye but also solve real user problems.",
+                'info-location': 'Location',
+                'info-location-value': 'Roshal, Russia',
+                'info-education': 'Education',
+                'info-education-value': 'SHET College, Graphic Design',
+                'info-email': 'Email',
+                'info-languages': 'Languages',
+                'info-languages-value': 'Russian, English',
+                'stat-projects': 'Projects',
+                'stat-works': 'Works',
+                'stat-year': 'Year',
+                'section-works': 'My projects',
+                'section-skills': 'Skills',
+                'skill-1': 'Graphic Design',
+                'skill-2': 'Layout',
+                'skill-3': 'Web Design',
+                'skill1_desc': 'Proficient in essential graphic design software:',
+                'skill2_desc': 'Working with layouts and print design:',
+                'skill3_desc': 'Designing interfaces and websites:',
+                'parallax-title': "Let's create together",
+                'parallax-btn': 'Start project',
+                'footer-copyright': '© 2026 Felikss_Shastoon. All rights reserved',
+                'project1-title': 'Business Card',
+                'project1-category': 'Graphic Design',
+                'project2-title': 'Photobook',
+                'project2-category': 'Layout',
+                'project3-title': 'Portfolio',
+                'project3-category': 'Web Design',
+                'about-project': 'About project',
+                'detail-client': 'Client',
+                'detail-year': 'Year',
+                'detail-role': 'Role',
+                'detail-tech': 'Technologies'
+            }
+        };
+
+        // Функция смены языка
+        function changeLanguage(lang) {
+            localStorage.setItem('site-language', lang);
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            
+            document.querySelectorAll('[data-translate]').forEach(element => {
+                const key = element.dataset.translate;
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                    // Обновляем data-text для красного текста
+                    if (element.hasAttribute('data-text')) {
+                        element.dataset.text = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Обновляем заголовок hero (специальный случай)
+            const heroSpans = document.querySelectorAll('.hero-title span');
+            if (heroSpans.length >= 2) {
+                heroSpans[0].textContent = translations[lang]['hero-title-1'];
+                heroSpans[1].textContent = translations[lang]['hero-title-2'];
+            }
+            
+            // Обновляем модальное окно, если открыто
+            if (currentProject && modal.classList.contains('active')) {
+                updateModalLanguage(lang);
+            }
+        }
+
+        // Обновление языка в модальном окне
+        function updateModalLanguage(lang) {
+            if (!currentProject) return;
+            
+            modalTitle.textContent = lang === 'ru' ? currentProject.title : currentProject.titleEn;
+            modalCategory.textContent = lang === 'ru' ? currentProject.category : currentProject.categoryEn;
+            modalDescription.textContent = lang === 'ru' ? currentProject.description : currentProject.descriptionEn;
+            modalClient.textContent = lang === 'ru' ? currentProject.client : currentProject.clientEn;
+            modalYear.textContent = currentProject.year;
+            modalRole.textContent = lang === 'ru' ? currentProject.role : currentProject.roleEn;
+        }
+
+        // Инициализация языка
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    changeLanguage(btn.dataset.lang);
+                });
+            });
+            
+            const savedLang = localStorage.getItem('site-language') || 'ru';
+            changeLanguage(savedLang);
+        });
+
+        // Модальное окно и галерея
+        const modal = document.getElementById('projectModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalDescription = document.getElementById('projectDescription');
+        const modalClient = document.getElementById('projectClient');
+        const modalYear = document.getElementById('projectYear');
+        const modalRole = document.getElementById('projectRole');
+        const modalTags = document.getElementById('projectTags');
+        const mainImage = document.getElementById('mainImage');
+        const galleryThumbnails = document.getElementById('galleryThumbnails');
+        const closeBtn = document.querySelector('.modal-close');
+        const prevBtn = document.querySelector('.gallery-nav.prev');
+        const nextBtn = document.querySelector('.gallery-nav.next');
+
+        let currentProject = null;
+        let currentImageIndex = 0;
+
+        // Открытие модального окна
+        document.querySelectorAll('.work-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const projectId = item.dataset.project;
+                currentProject = projectData[projectId];
+                currentImageIndex = 0;
+                
+                if (currentProject) {
+                    const currentLang = localStorage.getItem('site-language') || 'ru';
+                    
+                    modalTitle.textContent = currentLang === 'ru' ? currentProject.title : currentProject.titleEn;
+                    modalCategory.textContent = currentLang === 'ru' ? currentProject.category : currentProject.categoryEn;
+                    modalDescription.textContent = currentLang === 'ru' ? currentProject.description : currentProject.descriptionEn;
+                    modalClient.textContent = currentLang === 'ru' ? currentProject.client : currentProject.clientEn;
+                    modalYear.textContent = currentProject.year;
+                    modalRole.textContent = currentLang === 'ru' ? currentProject.role : currentProject.roleEn;
+                    
+                    modalTags.innerHTML = '';
+                    currentProject.tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = 'tag';
+                        span.textContent = tag;
+                        modalTags.appendChild(span);
+                    });
+                    
+                    updateGallery();
+                    
+                    modal.classList.add('active');
+                    document.body.classList.add('modal-open');
+                }
+            });
+        });
+
+        // Обновление галереи
+        function updateGallery() {
+            if (!currentProject) return;
+            
+            mainImage.src = currentProject.images[currentImageIndex];
+            mainImage.alt = currentProject.title;
+            
+            galleryThumbnails.innerHTML = '';
+            currentProject.images.forEach((img, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = `gallery-thumb ${index === currentImageIndex ? 'active' : ''}`;
+                thumb.innerHTML = `<img src="${img}" alt="Thumbnail ${index + 1}">`;
+                thumb.addEventListener('click', () => {
+                    currentImageIndex = index;
+                    updateGallery();
+                });
+                galleryThumbnails.appendChild(thumb);
+            });
+        }
+
+        // Навигация по галерее
+        prevBtn.addEventListener('click', () => {
+            if (!currentProject) return;
+            currentImageIndex = (currentImageIndex - 1 + currentProject.images.length) % currentProject.images.length;
+            updateGallery();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (!currentProject) return;
+            currentImageIndex = (currentImageIndex + 1) % currentProject.images.length;
+            updateGallery();
+        });
+
+        // Закрытие модального окна
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            document.body.classList.remove('modal-open');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            }
+            
+            if (!modal.classList.contains('active') || !currentProject) return;
+            
+            if (e.key === 'ArrowLeft') {
+                currentImageIndex = (currentImageIndex - 1 + currentProject.images.length) % currentProject.images.length;
+                updateGallery();
+            } else if (e.key === 'ArrowRight') {
+                currentImageIndex = (currentImageIndex + 1) % currentProject.images.length;
+                updateGallery();
+            }
+        });
+
+        // Мобильное меню: бургер
+        const menuToggle = document.getElementById('mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                // Анимация бургера (опционально)
+                menuToggle.classList.toggle('active');
+            });
+            // Закрыть меню при клике на ссылку
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navLinks.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
